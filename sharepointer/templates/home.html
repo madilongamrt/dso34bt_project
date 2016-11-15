@@ -1,0 +1,167 @@
+<html>
+
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
+	<title> {{ username }} </title>
+	<style>
+		ul {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+		}
+		
+		li {
+			float: left
+		}
+		
+		li a {
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+		}
+		
+		li a:hover {
+			background-color: #111;
+		}
+		
+		#contentdiv {
+			background-color: #A2AB58;
+			width: 70%;
+			position: absolute;
+			left: 15%;
+		}
+		
+		#content_header {
+			background-color: #aaa;
+		}
+		
+		.received_card {
+			background-color: #7E8F7C;
+			height: 350px;
+            width: 100%;
+		}
+		
+		.sent_card {
+			background-color: #AAA;
+			height: 350px;
+            width: 100%;
+		}
+		
+		h4 {
+			font-family: 'PT Sans Narrow', sans-serif;
+			margin-left: 10px;
+		}
+		
+		.btn {
+			font-family: 'PT Sans Narrow', sans-serif;
+			position: relative;
+			left: 10%;
+			border-style: none;
+			background: #404040;
+			margin-bottom: 2px;
+			width: 80%;
+			color: #eee;
+			font-size: 25px;
+			height: 60px;
+			font-style: italic;
+		}
+		
+		.btn:hover {
+			color: #efe;
+		}
+		
+		.rec {
+			width: 300px;
+		}
+	</style>
+
+	<script src='/static/js/file_operations.js'></script>
+</head>
+
+<body>
+	<ul>
+		<li><a class="active" href="/">Home</a></li>
+		<li><a class="active" href="/logout">Logout</a></li>
+		<li><a class="active" href="/sendfile">View Profile</a></li>
+		<li><a class="active" href="/sendfile">Send File</a></li>
+	</ul>
+
+	<br/>
+	<br/>
+
+	<div style="background-color: #F5F3EE">
+		<h3 style="font-family:'PT Sans Narrow', sans-serif;font-size: 20px">Number of files Sent: {{ no_of_files_sent }}</h3>
+		<h3 style="font-family:'PT Sans Narrow', sans-serif;font-size: 20px">Number of files Received: {{ no_of_files_received }}</h3>
+	</div>
+
+	<div style="background-color: #aaa">
+		<div id="content_header" align="center" style="width: 70%; display:inline-block;">
+			<h1 style="font-family:'PT Sans Narrow', sans-serif;font-size: 26px">Received Files</h1>
+		</div>
+		<div align="center" style="display:inline-block; background-color: #bbb; width:29.5%">
+			<h1 style="font-family:'PT Sans Narrow', sans-serif; font-size: 26px;">Sent Files</h1>
+		</div>
+	</div>
+
+	<br/>
+
+	<table style="width:100%;">
+		<tr>
+			<td style="width:70.5%">
+				<table style="width:100%">
+					<tbody>
+						{% for card in received_files %}
+						<tr>
+							<td>
+								<div class="sent_card" style="margin-bottom: 2px;">
+									<h4>Filename: &emsp; {{ card.file_name }}</h4>
+									<h4>Date: &emsp; &emsp; {{ card.upload_date }}</h4>
+									<h4>From: &emsp; &emsp; &emsp; {{ card.owner.first_name }}</h4>
+									<hr width="80%">
+									<button class="btn rec" onclick="download_received_file({{ card.pk }});">Download</button><br/>
+									<button class="btn rec" onclick="delete_received_file({{ card.pk }});">Delete</button><br/>
+									<button class="btn rec" onclick="edit_received_file({{ card.pk }}, '{{card.file_name }}');">Edit</button>
+									<br/>
+								</div>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</td>
+			<td>
+				<table style="width:100%">
+					<tbody>
+						{% for card in sent_files %}
+						<tr>
+							<td>
+								<div class="received_card" style="margin-bottom: 2px">
+									<h4>Filename: &emsp; {{ card.file.file_name }}</h4>
+									<h4>Date: &emsp; &emsp; {{ card.file.upload_date }}</h4>
+									<h4>To: &emsp; &emsp; &emsp; {{ card.file.recipients }}</h4>
+									<hr width="80%">
+									<button class="btn" onclick="download_sent_file({{ card.file.pk }});">Download</button>
+									<button class="btn" onclick="delete_sent_file({{ card.file.pk }});">Delete</button>
+									<button class="btn" onclick="edit_sent_file({{ card.file.pk }}, String('{{ card.file.file_name }}'));">Edit</button>
+									<br/>
+								</div>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script>
+
+</script>
+
+</html>

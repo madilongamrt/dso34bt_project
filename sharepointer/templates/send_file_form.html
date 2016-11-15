@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Procurement SharePoint</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/normalize.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/dropdownstyle.css">
+    <script src="/static/js/extension.js"></script>
+
+    <style>
+        .youell {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+        
+        .lie {
+            float: left
+        }
+        
+        .actives {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        
+        .actives:hover {
+            background-color: #111;
+        }
+        
+        #contentdiv {
+            background-color: #aaaaaa;
+            width: 70%;
+            position: absolute;
+            left: 15%;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="youell">
+        <li class="lie"><a class="actives" href="/">Home</a></li>
+        <li class="lie"><a class="actives" href="/logout">Logout</a></li>
+    </ul>
+
+    <br/>
+    <br/>
+    <div class="form" id="register_login_modal">
+        <form action="/sendfile" method="POST" onsubmit="return uploadfile();"> {% csrf_token %}
+            <h1 style="color: whitel; font-size: 20px;">Type receiver email</h1>
+            <input type="text" list="brow" required autocomplete="off" name="recipient" id="rec"/>
+            <datalist id="brow">
+                {% for user in users %}
+                    <option value="{{ user.email }}">
+                {% endfor %}
+            </datalist>
+            <br/> <br/>
+            <input type="file" name="doc"  accept=".py, .html, .cs, .java, .css, .json, .cpp, .c" id="upload"/>
+
+            <br/>
+            <br/>
+            <button class="button button-block" id="sendbutton"/>Send file</button>
+        </form>
+    </div>
+
+    <!--  -------------------Footer and End of page--------------  -->
+    <br/> <br/>
+    <footer>
+        <div align="center" style="background-color:#cccccc">
+            <br/>
+            <p>Copyright (c) 2016 Unitech Solutions</p>
+            <p>Contact information: <a href="mailto:smamba@student.42.fr">smamba@student.42.fr</a>.</p>
+            <br/>
+        </div>
+    </footer>
+    <script src='/static/js/jquery.min.js'></script>
+    <script src="/static/js/index.js"></script>
+    <script src="/static/js/extension.js"></script>
+    <script src="/static/js/dropdowncontrol.js"></script>
+</body>
+
+</html>

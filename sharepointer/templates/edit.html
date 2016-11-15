@@ -1,0 +1,251 @@
+<html>
+    <head>
+        <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
+		<link rel="stylesheet" href="/static/css/highlight/default.css">
+		
+
+		<script src="/static/js/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+
+		<script src="/static/js/codemirror.js"></script>
+		<link rel="stylesheet" href="/static/css/codemirror.css">
+		<script src="/static/js/mode/javascript/javascript.js"></script>
+
+        <title> {{ filename }} </title>
+        <style>
+            ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #333;
+            }
+            
+            li {
+                float: left
+            }
+
+            li a {
+                display: block;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+            
+            li a:hover {
+                background-color: #111;
+            }
+
+            #contentdiv {
+                background-color: #A2AB58;
+                width: 70%;
+                position: absolute;
+                left: 15%;
+            }
+
+            #content_header {
+                background-color: #aaa;
+            }
+
+            .received_card {
+                position: absolute;
+                left: 70%;
+                background-color: #7E8F7C;
+                display: inline-block;
+                height: 350px;
+                width: 29.5%;
+            }
+
+            .sent_card {
+                background-color: #AAA;
+                display: inline-block;
+                position: float;
+                height: 350px;
+                width: 70%;"
+            }
+
+            h4 {
+                font-family:'PT Sans Narrow', sans-serif;
+                margin-left: 10px;
+            }
+
+            .btn {
+                font-family:'PT Sans Narrow', sans-serif;
+                position: relative;
+                left: 10%;
+                border-style: none;
+                background: #404040;
+                margin-bottom: 2px;
+                width: 80%;
+                color: #eee;
+                font-size: 25px;
+                height: 60px;
+                font-style: italic;
+            }
+            .btn:hover {
+                color: #efe;
+            }
+
+            .rec {
+                width: 300px;
+            }
+			textarea {
+				width: 90%;
+				height: 90%;
+			}
+
+			.button
+			{
+				border-style: solid;
+				border-width: 0px;
+				background-color: #990000;
+				color: white;
+				height: 50px;
+				width: 200px;
+			}
+        </style>
+        
+        <script src='/static/js/file_operations.js'></script>
+    </head>
+    <body bgcolor="#aaa">
+
+        <br/>
+
+		<div align="center">
+			<button class="button" id="viewfile" style="display: inline-block; font-size: 20px; width: 200px;"/>View file</button>
+			<button class="button" id="editfile" style="display: inline-block; font-size: 20px; width: 200px;"/>Edit file</button>
+		</div>
+		<br/>
+
+		Edit Realtime <input type="checkbox" id="myCheck">
+
+
+		<div id="code" style="background-color: #aaa">
+			<pre><code id="simba">
+			{{ code }}
+			</code></pre>
+		</div> <br/> <br/>
+		<button class="button" id="savefile" style="display: inline-block; font-size: 20px; width: 200px;"/>Save</button>
+		<button class="button" id="exit" style="display: inline-block; font-size: 20px; width: 200px;" onclick="window.close();"/>Close</button>
+    </body>
+	<script src="/static/js/highlight.pack.js"></script>
+	<script src='/static/js/jquery.min.js'></script>
+
+	<script>
+		var status = "viewfile";
+		var myTextArea = null;
+		var fcon = "";
+		var dbID = "{{ file_id }}";
+
+		function csrf_protection(xhr) {
+			var cookieValue = null;
+			var name = 'csrftoken';
+			if (document.cookie && document.cookie != '') {
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++) {
+					var cookie = jQuery.trim(cookies[i]);
+					// Does this cookie string begin with the name we want?
+					if (cookie.substring(0, name.length + 1) == (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			xhr.setRequestHeader("X-CSRFToken", cookieValue);
+		}
+
+		function url_fetch(url, onresponse, method = 'POST', async = false) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function () {
+				onresponse(this)
+			}
+			xhttp.open(method, url, async);
+			return xhttp;
+		}
+
+		
+
+		function viewfile_view()
+		{
+			if (status == "viewfile")
+				return false;
+			status = "viewfile";
+			var div = document.getElementById('code');
+			div.innerHTML = "<pre><code id='simba'>" + `{{ code }}` + "</code></pre>";
+			setInterval(update, 1000);
+			
+		}
+		function save_file()
+		{
+			if (myTextArea == null)
+				return false;
+			code = myTextArea.value
+			var formData = new FormData();
+			formData.append("content", code);
+			formData.append("uid", dbID);
+			var req = url_fetch("/updatefile", function () {
+    				//window.location = "/home";
+  			}, "POST", true);
+			csrf_protection(req);
+			req.send(formData);
+			console.info("writing");
+		}
+
+		function editfile_view()
+		{
+
+			setTimeout(function () {
+			for (var i = 1; i < 99999; i++) {
+					window.clearInterval(i);
+					window.clearTimeout(i);
+				}
+			}, 3000);
+
+			if (status == "editfile")
+				return false;
+			status = "editfile";
+			var div = document.getElementById('code');
+			div.innerHTML = "<textarea id='codearea' onkeyup='save_file'>" + `{{ code }}` + "</textarea>";
+
+			myTextArea = div.children[0];
+			console.info(myTextArea);
+			fcon = myTextArea.value;
+			var myCodeMirror = CodeMirror(function(elt) {
+  				myTextArea.parentNode.replaceChild(elt, myTextArea);
+				myTextArea.rows = 190;
+				myTextArea.cols = 40;
+			},
+			{value: myTextArea.value});
+			myCodeMirror.on("change", function(cm, b){
+				var realtime = document.getElementById("myCheck").checked;
+    			myTextArea.value = cm.getValue();
+				fcon = myTextArea.value;
+				if (realtime)
+					save_file();
+			});
+
+			//setInterval(save_file, 1000);
+
+		}
+		document.getElementById('editfile').addEventListener('click', editfile_view);
+		document.getElementById('viewfile').addEventListener('click', viewfile_view);
+		document.getElementById('savefile').addEventListener('click', save_file);
+		
+		function update()
+		{
+			var req = url_fetch('/getfile?uid=' + dbID, function(e){
+				if (e.status == 200) {
+					var f = document.getElementById('simba');
+					f.innerHTML = JSON.parse(e.response)['content'];
+					console.info(f.innerHTML);
+				}
+			}, 'GET');
+			req.send();
+
+		}
+		if (status == "viewfile")
+			setInterval(update, 200);
+	</script>
+</html>
